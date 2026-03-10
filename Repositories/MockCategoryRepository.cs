@@ -9,8 +9,8 @@ namespace WebsiteBanHang.Repositories
         {
             _categoryList = new List<Category>
 {
-new Category { Id = 1, Name = "Laptop" },
-new Category { Id = 2, Name = "Desktop" },
+new Category { Id = 1, Name = "Thức ăn" },
+new Category { Id = 2, Name = "Thức uống" },
 // Thêm các category khác
 };
         }

@@ -1,3 +1,15 @@
+body {
+    /* Chọn 1 trong các mã màu dưới đây */
+    /**/background-color: #f8f9fa; /* Màu xám trắng nhạt (Rất chuyên nghiệp, sạch sẽ) */
+    /* Hoặc màu kem nhạt (Hợp với thực phẩm) */
+    background-color: #fffaf0; */
+    /* Hoặc màu trắng sứ */
+    /* background-color: #fdfdfd; */
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333; /* Màu chữ chính cho toàn trang */
+}
+
 html {
   font-size: 14px;
 }

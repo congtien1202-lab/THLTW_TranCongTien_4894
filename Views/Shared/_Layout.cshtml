@@ -11,25 +11,35 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebsiteBanHang</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-controller="Product" asp-action="Index">Sản phẩm</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
+
+        <div class="brand-section py-4 #fffaf0 border-bottom mb-4">
+            <div class="container d-flex align-items-center justify-content-center">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center">
+                    <img src="/images/logo.png" alt="Hapu Food Logo" style="height: 80px; width: auto;" class="me-3 shadow-sm rounded-circle">
+                    <div class="brand-text">
+                        <h1 class="display-4 fw-bolder mb-0" style="color: #dc3545; font-family: 'Forte', Tahoma, Geneva, Verdana, sans-serif;">HAPU FOOD</h1>
+                        <p class="text-muted mb-0 small text-uppercase tracking-widest" style="letter-spacing: 3px;">Thức ăn nhanh dành cho bạn</p>
+                    </div>
+                </a>
+            </div>
+        </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -39,7 +49,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - WebsiteBanHang - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; Hapu Food - Chuyên gà rán, ăn vặt - 0784241293 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

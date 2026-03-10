@@ -10,8 +10,8 @@ public class MockProductRepository : IProductRepository
         // Tạo một số dữ liệu mẫu
         _products = new List<Product>
 {
-new Product { Id = 1, Name = "Laptop", Price = 1000,
-Description = "A high-end laptop"},
+new Product { Id = 1, Name = "Gà Rán", Price = 25000,
+Description = "One fry chicken"},
 // Thêm các sản phẩm khác
 };
     }
