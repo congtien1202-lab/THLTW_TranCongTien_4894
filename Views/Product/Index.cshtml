@@ -1,0 +1,56 @@
+﻿@model IEnumerable<SellingWebsite.Models.Product>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-uppercase fw-bold">Sản phẩm nổi bật</h2>
+        <a asp-action="Add" class="btn btn-outline-primary btn-sm">Thêm sản phẩm</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 transition-hover">
+                    <div style="height: 250px; overflow: hidden;">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/no-image.png" : item.ImageUrl)"
+                             class="card-img-top w-100 h-100"
+                             style="object-fit: cover;"
+                             alt="@item.Name">
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">@item.Name</h5>
+                        <p class="card-text text-danger fw-bold">@item.Price.ToString("N0") VNĐ</p>
+                        <p class="card-text text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            @item.Description
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-white border-top-0 pb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a asp-action="Display" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Xem</a>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Sửa</a>
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                    <input type="hidden" name="productId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-dark rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-bag-plus me-2"></i>Đặt lịch ngay
+                                    </button>
+                                </form>
+                            </div>
+                            <small class="text-primary font-italic">@item.Category?.Name</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+    }
+</style>

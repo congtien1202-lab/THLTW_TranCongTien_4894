@@ -1,0 +1,9 @@
+﻿@model SellingWebsite.Models.Category
+
+<h3>Bạn có chắc chắn muốn xóa danh mục "@Model.Name"?</h3>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xác nhận Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

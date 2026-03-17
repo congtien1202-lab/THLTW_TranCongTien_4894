@@ -1,0 +1,80 @@
+﻿@model SellingWebsite.Models.Product
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Add Product";
+}
+<h2></h2>
+<form asp-action="Add" method="post" enctype="multipart/form-data">
+    <div class="container mt-5">
+        <div class="card shadow-sm border-0 p-4" style="background-color: #ffffff; border-radius: 15px;">
+            <h2 class="text-center mb-4 fw-bold" style="color: #2c3e50;">Thêm Ảnh Mới</h2>
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <form asp-action="Add" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-5 text-center border-end">
+                        <label class="fw-bold mb-2">Hình ảnh sản phẩm</label>
+                        <div class="image-upload-wrap border d-flex align-items-center justify-content-center"
+                             style="height: 300px; border-style: dashed !important; border-radius: 10px; background: #f8f9fa;">
+                            <input class="form-control d-none" type="file" id="imageInput" name="Image" onchange="previewImage(this)">
+                            <div class="text-center" onclick="document.getElementById('imageInput').click()" style="cursor: pointer;">
+                                <i class="bi bi-cloud-arrow-up fs-1 text-muted"></i>
+                                <p id="previewText">Click để chọn ảnh</p>
+                                <img id="imagePreview" src="#" alt="Preview" class="d-none img-fluid" style="max-height: 280px; border-radius: 8px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7 ps-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên sản phẩm</label>
+                            <input type="text" name="Name" class="form-control shadow-none" placeholder="Nhập tên ảnh...">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Giá sản phẩm</label>
+                                    <input type="number" name="Price" class="form-control shadow-none" step="0.01" placeholder="Nhập giá (ví dụ: 100)">
+                                    <span class="text-danger" asp-validation-for="Price"></span>
+                                </div>
+                                <label class="form-label fw-bold">Danh mục</label>
+                                <select name="CategoryId" class="form-select shadow-none" required>
+                                    <option value="">-- Chọn danh mục --</option>
+
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        foreach (var item in (SelectList)ViewBag.Categories)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mô tả</label>
+                            <textarea name="Description" class="form-control shadow-none" rows="4" placeholder="Viết vài dòng giới thiệu..."></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg fw-bold" style="border-radius: 8px;">Đăng Sản Phẩm</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('d-none');
+                    document.getElementById('previewText').classList.add('d-none');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</form>     

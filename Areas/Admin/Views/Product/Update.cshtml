@@ -1,0 +1,66 @@
+﻿@model SellingWebsite.Models.Product
+@{
+    ViewData["Title"] = "Cập nhật sản phẩm";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">CHỈNH SỬA SẢN PHẨM</h4>
+        </div>
+        <div class="card-body">
+            <form asp-area="Admin" asp-controller="Product" asp-action="Update" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm</label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="mb-3 text-center">
+                    <p class="fw-bold mb-1">Ảnh hiện tại:</p>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Url.Content("~" + Model.ImageUrl)" id="preview" style="width:150px; height:150px; object-fit:cover; border-radius:10px;" class="shadow-sm border" />
+                    }
+                    else
+                    {
+                        <img src="/Images/no-image.png" id="preview" style="width:150px; border-radius:10px;" />
+                    }
+                    <input type="file" name="imageUrl" id="fileInput" class="form-control mt-2" onchange="previewImage(this)" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label fw-bold">Giá bán</label>
+                    <input asp-for="Price" type="number" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CategoryId" class="form-label fw-bold">Danh mục</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+                </div>
+                <button type="submit" class="btn btn-primary px-5">CẬP NHẬT</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('preview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

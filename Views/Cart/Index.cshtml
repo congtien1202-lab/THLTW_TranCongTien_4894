@@ -1,0 +1,66 @@
+﻿@model IEnumerable<SellingWebsite.Models.CartItem>
+
+<div class="container mt-5">
+    <h2 class="mb-4 fw-bold">Giỏ hàng của bạn</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <p>Giỏ hàng đang trống. Hãy chọn cho mình một bộ ảnh ưng ý nhé!</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-dark">Quay lại cửa hàng</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="@item.Product.ImageUrl" width="60" class="rounded me-3">
+                                            <span class="fw-bold">@item.Product.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>@item.Product.Price.ToString("N0") VNĐ</td>
+                                    <td>@item.Quantity</td>
+                                    <td class="fw-bold">@((item.Product.Price * item.Quantity).ToString("N0")) VNĐ</td>
+                                    <td>
+                                        <a asp-action="RemoveFromCart" asp-route-productId="@item.Product.Id" class="text-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-3">Tạm tính</h5>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tổng tiền:</span>
+                        <span class="fs-5 fw-bold text-danger">@Model.Sum(x => x.Product.Price * x.Quantity).ToString("N0") VNĐ</span>
+                    </div>
+                    <form asp-action="Checkout" method="post">
+                        <button type="submit" class="btn btn-dark w-100 py-2 rounded-pill">Xác nhận đặt lịch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

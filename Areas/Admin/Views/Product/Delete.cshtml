@@ -1,0 +1,20 @@
+﻿@model SellingWebsite.Models.Product
+@{
+    ViewData["Title"] = "Xác nhận xóa";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger shadow-sm p-4">
+        <img src="@Model.ImageUrl" class="rounded shadow-sm mb-3" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='/Images/no-image.png'" />
+        <h3 class="fw-bold">Xác nhận xóa sản phẩm?</h3>
+        <p>Bạn có chắc chắn muốn xóa sản phẩm <strong>@Model.Name</strong> không? Hành động này không thể hoàn tác.</p>
+        <hr>
+        <div class="d-flex">
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger px-4 me-2">ĐỒNG Ý XÓA</button>
+            </form>
+            <a asp-action="Index" class="btn btn-secondary px-4">HỦY BỎ</a>
+        </div>
+    </div>
+</div>
