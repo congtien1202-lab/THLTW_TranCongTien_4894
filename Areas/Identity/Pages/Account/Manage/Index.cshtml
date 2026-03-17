@@ -7,18 +7,26 @@
 
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
+
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-10">
         <form id="profile-form" method="post" enctype="multipart/form-data">
             <div class="row">
-                <div class="col-md-4 text-center mb-3">
-                    <label asp-for="Input.AvatarFile" class="d-block cursor-pointer">
-                        <img src="@(string.IsNullOrEmpty(Model.Input.AvatarUrl) ? "/images/default-avatar.png" : Model.Input.AvatarUrl)"
-                             id="avatar-preview" class="rounded-circle img-thumbnail"
-                             style="width: 150px; height: 150px; object-fit: cover;">
-                        <p class="mt-2 text-primary small">Thay đổi ảnh</p>
+
+                <div class="col-md-4 text-center mb-4">
+                    <label asp-for="Input.ProfilePicture" class="d-block" style="cursor: pointer;" title="Nhấn để chọn ảnh mới">
+                        <img id="avatar-preview"
+                             src="@(string.IsNullOrEmpty(Model.Input.AvatarUrl) ? "/images/default-avatar.png" : Model.Input.AvatarUrl)"
+                             class="rounded-circle img-thumbnail shadow-sm mb-2"
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Avatar Preview" />
                     </label>
-                    <input asp-for="Input.AvatarFile" type="file" class="d-none" onchange="previewImage(this)" />
+
+                    <div class="mt-2">
+                        <input asp-for="Input.ProfilePicture" type="file" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this)" />
+                        <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+                    </div>
+                    <small class="text-muted">Bạn có thể click vào ảnh để chọn file</small>
                 </div>
 
                 <div class="col-md-8">
@@ -27,66 +35,77 @@
                         <input asp-for="Username" class="form-control" disabled />
                         <label asp-for="Username" class="form-label"></label>
                     </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="Nhập họ của bạn" />
+                        <label asp-for="Input.FirstName" class="form-label"></label>
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Nhập tên của bạn" />
+                        <label asp-for="Input.LastName" class="form-label"></label>
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    </div>
                     <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Lưu thay đổi</button>
                 </div>
             </div>
         </form>
 
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-                <h4 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i>Lịch sử đặt lịch của tôi</h4>
-
-                @if (Model.UserOrders != null && Model.UserOrders.Any())
-                {
-                    <div class="table-responsive shadow-sm rounded border">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-3">Mã đơn</th>
-                                    <th>Ngày đặt</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Trạng thái</th>
-                                    <th class="text-end pe-3">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var order in Model.UserOrders)
-                                {
+        @if (!User.IsInRole("Admin") && User.Identity?.Name != "congtien1202@gmail.com")
+        {
+            <hr class="my-5" />
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i>Lịch sử đặt lịch của tôi</h4>
+                    @if (Model.UserOrders != null && Model.UserOrders.Any())
+                    {
+                        <div class="table-responsive shadow-sm rounded border">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <td class="ps-3 fw-bold">#@order.Id</td>
-                                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td class="text-danger fw-bold">@order.TotalPrice.ToString("N0") VNĐ</td>
-                                        <td>
-                                            @if (order.Status == "Hoàn thành")
-                                            {
-                                                <span class="badge bg-success">@order.Status</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark">@order.Status</span>
-                                            }
-                                        </td>
-                                        <td class="text-end pe-3">
-                                            <a asp-page="./OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-dark">
-                                                Chi tiết
-                                            </a>
-                                        </td>
+                                        <th class="ps-3">Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-end pe-3">Thao tác</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="alert alert-light border text-center py-4">
-                        <p class="mb-0 text-muted">Bạn chưa có đơn đặt lịch nào.</p>
-                        <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-dark mt-2">Khám phá dịch vụ</a>
-                    </div>
-                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.UserOrders)
+                                    {
+                                        <tr>
+                                            <td class="ps-3 fw-bold">#@order.Id</td>
+                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="text-danger fw-bold">@order.TotalPrice.ToString("N0") VNĐ</td>
+                                            <td>
+                                                @if (order.Status == "Hoàn thành")
+                                                {
+                                                    <span class="badge bg-success">@order.Status</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">@order.Status</span>
+                                                }
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <a asp-page="./OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-dark">Chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light border text-center py-4">
+                            <p class="mb-0 text-muted">Bạn chưa có đơn đặt lịch nào.</p>
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-dark mt-2">Khám phá dịch vụ</a>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+        }
 
         <script>
             function previewImage(input) {

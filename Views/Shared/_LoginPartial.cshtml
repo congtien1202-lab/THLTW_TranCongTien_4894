@@ -3,21 +3,44 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    // Chuẩn bị sẵn dữ liệu ngay từ đầu để HTML bên dưới gọn gàng hơn
+    string displayName = "Người dùng";
+    string avatarUrl = "/images/default-avatar.png";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        if (currentUser != null)
+        {
+            // 1. Xử lý hiển thị Tên đầy đủ
+            displayName = $"{currentUser.FirstName} {currentUser.LastName}".Trim();
+            if (string.IsNullOrEmpty(displayName))
+            {
+                displayName = currentUser.Email ?? "Người dùng";
+            }
+
+            // 2. Xử lý đường dẫn Avatar
+            if (!string.IsNullOrEmpty(currentUser.AvatarUrl))
+            {
+                avatarUrl = currentUser.AvatarUrl;
+            }
+        }
+    }
+}
+
 <ul class="navbar-nav align-items-center">
     @if (SignInManager.IsSignedIn(User))
     {
-        // Lấy thông tin User hiện tại bao gồm cả AvatarUrl
-        var user = await UserManager.GetUserAsync(User);
-        var avatar = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : "/images/default-avatar.png";
-
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center py-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="@avatar" class="rounded-circle border shadow-sm"
+
+                <img src="@avatarUrl" class="rounded-circle border shadow-sm"
                      style="width: 38px; height: 38px; object-fit: cover; border: 2px solid #fff;"
                      onerror="this.src='/images/default-avatar.png'">
 
                 <span class="ms-2 d-none d-lg-inline text-dark fw-bold">
-                    @(user?.FirstName ?? "Người dùng")
+                    @displayName
                 </span>
             </a>
 

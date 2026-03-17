@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SellingWebsite.Models;
 using SellingWebsite.Repositories;
 
@@ -22,6 +23,18 @@ namespace SellingWebsite.Controllers
             var products = await _productRepository.GetAllAsync();
             return View(products);
         }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // Sử dụng _productRepository thay vì _context
+            var product = await _productRepository.GetByIdAsync(id.Value);
+
+            if (product == null) return NotFound();
+
+            return View(product);
+        }
+
         // Hiển thị form thêm sản phẩm mới
         [Authorize]
         public async Task<IActionResult> Add()

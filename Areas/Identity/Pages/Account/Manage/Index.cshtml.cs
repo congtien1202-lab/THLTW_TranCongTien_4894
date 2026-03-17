@@ -1,9 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting; // THÊM THƯ VIỆN NÀY ĐỂ DÙNG IWebHostEnvironment
+using System.IO; // THÊM THƯ VIỆN NÀY ĐỂ XỬ LÝ FILE
 using SellingWebsite.Data;
 using SellingWebsite.Models;
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SellingWebsite.Areas.Identity.Pages.Account.Manage
 {
@@ -19,56 +24,45 @@ namespace SellingWebsite.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly SellingWebsite.Data.ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env; // THÊM BIẾN MÔI TRƯỜNG ĐỂ LƯU FILE
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            SellingWebsite.Data.ApplicationDbContext context)
+            SellingWebsite.Data.ApplicationDbContext context,
+            IWebHostEnvironment env) // TIÊM VÀO CONSTRUCTOR
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context; // 2. GÁN GIÁ TRỊ VÀO ĐÂY (Rất quan trọng)
+            _context = context;
+            _env = env; // GÁN GIÁ TRỊ
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string Username { get; set; }
         public List<Order> UserOrders { get; set; }
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            public string AvatarUrl { get; set; }
+
+            [Display(Name = "Họ")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "Tên")]
+            public string LastName { get; set; }
+
             [Display(Name = "Ảnh đại diện")]
-            public IFormFile AvatarFile { get; set; }
-            public string? AvatarUrl { get; set; }
-            public string? FirstName { get; set; }
-            public string? LastName { get; set; }
-            
+            public IFormFile ProfilePicture { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -81,15 +75,15 @@ namespace SellingWebsite.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                FirstName = user.FirstName, // <--- Cực kỳ quan trọng để hiện Họ
-                LastName = user.LastName,   // <--- Cực kỳ quan trọng để hiện Tên
-                AvatarUrl = user.AvatarUrl   // <--- Để hiện ảnh hiện tại trong trang sửa
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                AvatarUrl = user.AvatarUrl // Kéo link ảnh từ DB ra để hiển thị
             };
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User) as ApplicationUser; // Thêm 'as ApplicationUser'
+            var user = await _userManager.GetUserAsync(User) as ApplicationUser;
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -102,7 +96,7 @@ namespace SellingWebsite.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User) as ApplicationUser; // Thêm 'as ApplicationUser'
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -125,22 +119,45 @@ namespace SellingWebsite.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (Input.AvatarFile != null)
+            // --- LƯU HỌ VÀ TÊN ---
+            if (Input.FirstName != user.FirstName || Input.LastName != user.LastName)
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.AvatarFile.FileName);
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
-
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await Input.AvatarFile.CopyToAsync(stream);
-                }
-
-                user.AvatarUrl = "/images/" + fileName; // Cập nhật đường dẫn vào User
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    StatusMessage = "Lỗi khi cập nhật Họ và Tên vào cơ sở dữ liệu.";
+                    return RedirectToPage();
+                }
+            }
+
+            // --- BẮT ĐẦU LƯU ẢNH (Phần bạn bị thiếu) ---
+            if (Input.ProfilePicture != null)
+            {
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "images", "avatars");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Input.ProfilePicture.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Input.ProfilePicture.CopyToAsync(fileStream);
+                }
+
+                user.AvatarUrl = "/images/avatars/" + uniqueFileName;
                 await _userManager.UpdateAsync(user);
             }
+            // --- KẾT THÚC LƯU ẢNH ---
+
             await _signInManager.RefreshSignInAsync(user);
+
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }

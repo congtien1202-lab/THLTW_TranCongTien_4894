@@ -32,9 +32,9 @@
             transition: color 0.3s ease;
         }
 
-            .nav-link:hover {
-                color: #000 !important;
-            }
+        .nav-link:hover {
+            color: #000 !important;
+        }
 
         footer {
             background-color: #fff;
@@ -43,6 +43,19 @@
 
         .main-content {
             min-height: 80vh;
+        }   
+
+        /* Hiệu ứng cho ảnh đại diện trên Navbar */
+        .nav-link img.rounded-circle {
+            transition: all 0.3s ease-in-out;
+            border: 2px solid transparent;
+        }
+
+        .nav-link img.rounded-circle:hover {
+            transform: scale(1.1);
+            border-color: #007bff !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
         }
     </style>
 </head>
@@ -61,18 +74,46 @@
                 </button>
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 ms-3">
+                    <ul class="navbar-nav flex-grow-1 ms-3 align-items-center">
                         <li class="nav-item">
                             <a class="nav-link text-dark fw-bold text-uppercase small" asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a>
                         </li>
+                        
+                        @if (User.IsInRole("Admin") || User.Identity?.Name == "congtien1202@gmail.com")
+                        {
+                            <li class="nav-item dropdown ms-2">
+                                <a class="nav-link dropdown-toggle text-danger fw-bold text-uppercase small" href="#" id="adminMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-shield-lock-fill"></i> Quản trị
+                                </a>
+                                <ul class="dropdown-menu shadow-sm border-0 mt-2" aria-labelledby="adminMenu">
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                                            <i class="bi bi-box-seam me-2"></i>Quản lý Sản phẩm
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-area="Admin" asp-controller="Order" asp-action="Index">
+                                            <i class="bi bi-receipt me-2"></i>Quản lý Đơn hàng
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                                            <i class="bi bi-tags me-2"></i>Quản lý Danh mục
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
-                    <ul class="navbar-nav">
+
+                    <ul class="navbar-nav align-items-center">
                         <li class="nav-item me-3">
-                            <a class="nav-link text-dark position-relative"asp-area="" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-bag-heart fs-5"></i> @{
-                                                                var cart = Context.Session.GetJson<List<int>>("Cart");
-                                var count = cart?.Count ?? 0;
-                                                                }
+                            <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-bag-heart fs-5"></i>
+                                @{
+                                    var cart = Context.Session.GetJson<List<int>>("Cart");
+                                    var count = cart?.Count ?? 0;
+                                }
                                 @if (count > 0)
                                 {
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
@@ -125,17 +166,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-<style>
-    /* Hiệu ứng cho ảnh đại diện trên Navbar */
-    .nav-link img.rounded-circle {
-        transition: all 0.3s ease-in-out; /* Tạo chuyển động mượt mà */
-        border: 2px solid transparent; /* Viền mặc định ẩn */
-    }
-
-        .nav-link img.rounded-circle:hover {
-            transform: scale(1.1); /* Phóng to 10% */
-            border-color: #007bff !important; /* Đổi màu viền sang xanh */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Thêm đổ bóng */
-            cursor: pointer;
-        }
-</style>
